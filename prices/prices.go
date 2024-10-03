@@ -10,7 +10,7 @@ import (
 type TaxIncludedPricesJob struct {
 	TaxRate           float64
 	InputPrices       []float64
-	TaxIncludedPrices map[string]float64
+	TaxIncludedPrices map[string]string
 }
 
 func NewTaxIncludedPricesJob(taxRate float64) *TaxIncludedPricesJob {
@@ -48,5 +48,7 @@ func (job *TaxIncludedPricesJob) Process() {
 		result[fmt.Sprintf("%.2f", price)] = fmt.Sprintf("%.2f", texIncludedPrice)
 	}
 
-	fmt.Println(result)
+	job.TaxIncludedPrices = result
+
+	filemanager.WriteJSON(fmt.Sprintf("result_%.0f.json", job.TaxRate*100), job)
 }
