@@ -8,13 +8,15 @@ import (
 )
 
 type TaxIncludedPricesJob struct {
+	IOManager         filemanager.FileManager
 	TaxRate           float64
 	InputPrices       []float64
 	TaxIncludedPrices map[string]string
 }
 
-func NewTaxIncludedPricesJob(taxRate float64) *TaxIncludedPricesJob {
+func NewTaxIncludedPricesJob(fm filemanager.FileManager, taxRate float64) *TaxIncludedPricesJob {
 	return &TaxIncludedPricesJob{
+		IOManager:   fm,
 		TaxRate:     taxRate,
 		InputPrices: []float64{100, 200, 300},
 	}
@@ -22,7 +24,7 @@ func NewTaxIncludedPricesJob(taxRate float64) *TaxIncludedPricesJob {
 
 func (job *TaxIncludedPricesJob) LoadData() {
 
-	lines, err := filemanager.ReactLines("prices.txt")
+	lines, err := job.IOManager.ReactLines()
 
 	if err != nil {
 		fmt.Println(err)
@@ -50,5 +52,5 @@ func (job *TaxIncludedPricesJob) Process() {
 
 	job.TaxIncludedPrices = result
 
-	filemanager.WriteJSON(fmt.Sprintf("result_%.0f.json", job.TaxRate*100), job)
+	job.IOManager.WriteResult(job)
 }

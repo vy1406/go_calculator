@@ -8,8 +8,13 @@ import (
 	"os"
 )
 
-func ReactLines(path string) ([]string, error) {
-	file, err := os.Open(path)
+type FileManager struct {
+	InputFilePath  string
+	OutputFilePath string
+}
+
+func (fm FileManager) ReactLines() ([]string, error) {
+	file, err := os.Open(fm.InputFilePath)
 
 	if err != nil {
 		fmt.Println("Error opening file")
@@ -34,8 +39,8 @@ func ReactLines(path string) ([]string, error) {
 	return lines, nil
 }
 
-func WriteJSON(path string, data interface{}) error {
-	file, err := os.Create(path)
+func (fm FileManager) WriteResult(data interface{}) error {
+	file, err := os.Create(fm.OutputFilePath)
 
 	if err != nil {
 		return errors.New("Error creating file")
@@ -53,4 +58,12 @@ func WriteJSON(path string, data interface{}) error {
 	file.Close()
 
 	return nil
+}
+
+// will return a copy and not a pointer... just to show another option
+func New(inputPath string, outputPath string) FileManager {
+	return FileManager{
+		InputFilePath:  inputPath,
+		OutputFilePath: outputPath,
+	}
 }
